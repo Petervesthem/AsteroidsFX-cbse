@@ -1,5 +1,6 @@
 package dk.sdu.mmmi.collision;
 
+import dk.sdu.mmmi.asteroid.SplitAsteroid;
 import dk.sdu.mmmi.cbse.ICollide;
 import dk.sdu.mmmi.cbse.common.asteroid.Asteroid;
 import dk.sdu.mmmi.cbse.common.asteroid.ISplitAsteroid;
@@ -8,13 +9,11 @@ import dk.sdu.mmmi.cbse.common.data.GameData;
 import dk.sdu.mmmi.cbse.common.data.World;
 import dk.sdu.mmmi.cbse.common.services.IPostEntityProcessingService;
 
-import java.util.Collection;
-import java.util.ServiceLoader;
-
-import static java.util.stream.Collectors.toList;
 
 
 public class PythCollision implements ICollide, IPostEntityProcessingService {
+
+    ISplitAsteroid splitAsteroid = new SplitAsteroid();
 
 
     @Override
@@ -27,6 +26,17 @@ public class PythCollision implements ICollide, IPostEntityProcessingService {
                 }
 
                 if (this.collide(entity, otherEntity)) {
+                    if(entity instanceof Asteroid && otherEntity instanceof Asteroid){
+                        continue;
+                    }
+
+                    if (entity instanceof Asteroid && ((Asteroid) entity).getHp() > 1){
+                        splitAsteroid.createSplitAsteroid(world, (Asteroid) entity);
+                    } else if (otherEntity instanceof Asteroid && ((Asteroid) otherEntity).getHp() > 1) {
+                        splitAsteroid.createSplitAsteroid(world, (Asteroid) otherEntity);
+
+                    }
+
                     world.removeEntity(entity);
                     world.removeEntity(otherEntity);
                 }
