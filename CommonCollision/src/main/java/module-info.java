@@ -1,4 +1,4 @@
 module CommonCollision {
-    exports dk.sdu.mmmi.cbse;
+    exports dk.sdu.mmmi.commoncollision;
     requires Common;
 }

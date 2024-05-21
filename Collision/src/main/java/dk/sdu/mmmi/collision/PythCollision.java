@@ -1,7 +1,7 @@
 package dk.sdu.mmmi.collision;
 
 import dk.sdu.mmmi.asteroid.SplitAsteroid;
-import dk.sdu.mmmi.cbse.ICollide;
+import dk.sdu.mmmi.commoncollision.ICollide;
 import dk.sdu.mmmi.cbse.common.asteroid.Asteroid;
 import dk.sdu.mmmi.cbse.common.asteroid.ISplitAsteroid;
 import dk.sdu.mmmi.cbse.common.data.Entity;
@@ -9,6 +9,10 @@ import dk.sdu.mmmi.cbse.common.data.GameData;
 import dk.sdu.mmmi.cbse.common.data.World;
 import dk.sdu.mmmi.cbse.common.services.IPostEntityProcessingService;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 
 public class PythCollision implements ICollide, IPostEntityProcessingService {
@@ -18,7 +22,7 @@ public class PythCollision implements ICollide, IPostEntityProcessingService {
 
     @Override
     public void process(GameData gameData, World world) {
-
+        int numberDestroyed = 0;
         for (Entity entity : world.getEntities()) {
             for (Entity otherEntity : world.getEntities()) {
                 if (entity.equals(otherEntity)) {
@@ -39,6 +43,23 @@ public class PythCollision implements ICollide, IPostEntityProcessingService {
 
                     world.removeEntity(entity);
                     world.removeEntity(otherEntity);
+
+                    //
+                    numberDestroyed++;
+                    System.out.println(numberDestroyed);
+
+                    String url = String.format("http://localhost:8080/updatescore?numberDestroyed=%d", numberDestroyed);
+
+                    HttpClient client = HttpClient.newHttpClient();
+                    HttpRequest httpRequest = HttpRequest.newBuilder()
+                            .uri(URI.create(url))
+                            .build();
+
+                    try {
+                        client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString());
+                    } catch (Exception e){
+                        System.out.println("The score could not be updated ");
+                    }
                 }
             }
         }

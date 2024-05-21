@@ -52,7 +52,7 @@ public class EnemyControlSystem implements IEntityProcessingService {
             enemy.setY(gameData.getDisplayHeight() - 100);
         }
 
-        //Checking collision of the game borders for enemy
+        //Checking if enemy hits border then change their rotation
         if (enemy.getX() > gameData.getDisplayWidth() || enemy.getX() + gameData.getDisplayWidth() < gameData.getDisplayWidth()) {
             enemy.setRotation(enemy.getRotation() + 180);
         }
